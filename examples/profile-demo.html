@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de Perfil - Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .profile-status {
+      background: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .auth-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 10px;
+    }
+
+    .auth-section h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .profile-display {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+
+    .profile-display h3 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .profile-field {
+      display: flex;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 5px;
+    }
+
+    .profile-field strong {
+      width: 150px;
+      color: #667eea;
+    }
+
+    .avatar-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #667eea;
+      margin: 10px 0;
+    }
+
+    .cover-preview {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .interests-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .interest-tag {
+      background: #667eea;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .social-link {
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Editor de Perfil</h1>
+      <div class="profile-status" id="profileStatus">
+        <span id="statusText">No autenticado</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Sección de Autenticación -->
+      <div class="auth-section" id="authSection">
+        <h3>🔐 Autenticación</h3>
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" id="authEmail" placeholder="usuario@example.com">
+        </div>
+        <div class="form-group">
+          <label>Contraseña:</label>
+          <input type="password" id="authPassword" placeholder="********">
+        </div>
+        <button onclick="login()">Iniciar Sesión</button>
+        <button onclick="register()" class="btn-secondary">Registrarse</button>
+      </div>
+
+      <!-- Alertas -->
+      <div id="alertContainer"></div>
+
+      <!-- Formulario de Perfil -->
+      <div id="profileSection" class="hidden">
+        <h3>👤 Información Personal</h3>
+        <form id="profileForm">
+          <div class="form-group">
+            <label>Nombre Completo:</label>
+            <input type="text" id="name" placeholder="Juan Pérez">
+          </div>
+
+          <div class="form-group">
+            <label>Biografía:</label>
+            <textarea id="bio" placeholder="Cuéntanos sobre ti..."></textarea>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label>Teléfono:</label>
+              <input type="tel" id="phone" placeholder="+593987654321">
+            </div>
+
+            <div class="form-group">
+              <label>Fecha de Nacimiento:</label>
+              <input type="date" id="dateOfBirth">
+            </div>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label>Género:</label>
+              <select id="gender">
+                <option value="">Seleccionar...</option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="other">Otro</option>
+                <option value="prefer-not-to-say">Prefiero no decir</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Ocupación:</label>
+              <input type="text" id="occupation" placeholder="Ingeniero de Software">
+            </div>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label>Empresa:</label>
+              <input type="text" id="company" placeholder="Tech Solutions Inc.">
+            </div>
+
+            <div class="form-group">
+              <label>Sitio Web:</label>
+              <input type="url" id="website" placeholder="https://miportfolio.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Foto de Perfil (URL):</label>
+            <input type="url" id="avatar" placeholder="https://example.com/avatar.jpg">
+          </div>
+
+          <div class="form-group">
+            <label>Foto de Portada (URL):</label>
+            <input type="url" id="coverPhoto" placeholder="https://example.com/cover.jpg">
+          </div>
+
+          <div class="form-group">
+            <label>Intereses (separados por coma):</label>
+            <input type="text" id="interests" placeholder="programación, viajes, fotografía">
+          </div>
+
+          <h3 style="margin-top: 30px;">🌐 Redes Sociales</h3>
+          
+          <div class="two-columns">
+            <div class="form-group">
+              <label>Facebook:</label>
+              <input type="url" id="facebook" placeholder="https://facebook.com/usuario">
+            </div>
+
+            <div class="form-group">
+              <label>Instagram:</label>
+              <input type="url" id="instagram" placeholder="https://instagram.com/usuario">
+            </div>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label>Twitter:</label>
+              <input type="url" id="twitter" placeholder="https://twitter.com/usuario">
+            </div>
+
+            <div class="form-group">
+              <label>LinkedIn:</label>
+              <input type="url" id="linkedin" placeholder="https://linkedin.com/in/usuario">
+            </div>
+          </div>
+
+          <button type="button" onclick="updateProfile()" class="btn-success">
+            💾 Guardar Cambios
+          </button>
+          <button type="button" onclick="loadProfile()" class="btn-secondary">
+            🔄 Recargar
+          </button>
+          <button type="button" onclick="logout()" class="btn-secondary">
+            🚪 Cerrar Sesión
+          </button>
+        </form>
+
+        <!-- Vista del Perfil -->
+        <div class="profile-display">
+          <h3>Vista Previa del Perfil</h3>
+          <div id="profilePreview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000';
+    let token = localStorage.getItem('token');
+
+    // Inicializar
+    if (token) {
+      showProfileSection();
+      loadProfile();
+    }
+
+    // Funciones de Autenticación
+    async function login() {
+      const email = document.getElementById('authEmail').value;
+      const password = document.getElementById('authPassword').value;
+
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          token = data.access_token;
+          localStorage.setItem('token', token);
+          showAlert('¡Inicio de sesión exitoso!', 'success');
+          showProfileSection();
+          loadProfile();
+        } else {
+          showAlert(data.message || 'Error al iniciar sesión', 'error');
+        }
+      } catch (error) {
+        showAlert('Error de conexión', 'error');
+      }
+    }
+
+    async function register() {
+      const email = document.getElementById('authEmail').value;
+      const password = document.getElementById('authPassword').value;
+      const name = prompt('Ingresa tu nombre completo:');
+
+      if (!name) return;
+
+      try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showAlert('¡Registro exitoso! Ahora puedes iniciar sesión', 'success');
+        } else {
+          showAlert(data.message || 'Error al registrarse', 'error');
+        }
+      } catch (error) {
+        showAlert('Error de conexión', 'error');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      token = null;
+      location.reload();
+    }
+
+    // Funciones de Perfil
+    async function loadProfile() {
+      if (!token) {
+        showAlert('Debes iniciar sesión primero', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/users/profile`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          populateForm(profile);
+          displayProfile(profile);
+          updateStatus(profile);
+        } else {
+          showAlert('Error al cargar perfil', 'error');
+        }
+      } catch (error) {
+        showAlert('Error de conexión', 'error');
+      }
+    }
+
+    async function updateProfile() {
+      if (!token) {
+        showAlert('Debes iniciar sesión primero', 'error');
+        return;
+      }
+
+      const profileData = {
+        name: document.getElementById('name').value,
+        bio: document.getElementById('bio').value,
+        phone: document.getElementById('phone').value,
+        dateOfBirth: document.getElementById('dateOfBirth').value || undefined,
+        gender: document.getElementById('gender').value || undefined,
+        occupation: document.getElementById('occupation').value,
+        company: document.getElementById('company').value,
+        website: document.getElementById('website').value || undefined,
+        avatar: document.getElementById('avatar').value || undefined,
+        coverPhoto: document.getElementById('coverPhoto').value || undefined,
+        interests: document.getElementById('interests').value.split(',').map(i => i.trim()).filter(i => i),
+        socialMedia: {
+          facebook: document.getElementById('facebook').value || undefined,
+          instagram: document.getElementById('instagram').value || undefined,
+          twitter: document.getElementById('twitter').value || undefined,
+          linkedin: document.getElementById('linkedin').value || undefined
+        }
+      };
+
+      // Limpiar campos undefined
+      Object.keys(profileData).forEach(key => 
+        profileData[key] === undefined && delete profileData[key]
+      );
+
+      try {
+        const response = await fetch(`${API_URL}/users/profile`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(profileData)
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          showAlert('¡Perfil actualizado exitosamente!', 'success');
+          displayProfile(profile);
+          updateStatus(profile);
+        } else {
+          const error = await response.json();
+          showAlert(error.message || 'Error al actualizar perfil', 'error');
+        }
+      } catch (error) {
+        showAlert('Error de conexión', 'error');
+      }
+    }
+
+    // Funciones de UI
+    function populateForm(profile) {
+      document.getElementById('name').value = profile.name || '';
+      document.getElementById('bio').value = profile.bio || '';
+      document.getElementById('phone').value = profile.phone || '';
+      document.getElementById('dateOfBirth').value = profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : '';
+      document.getElementById('gender').value = profile.gender || '';
+      document.getElementById('occupation').value = profile.occupation || '';
+      document.getElementById('company').value = profile.company || '';
+      document.getElementById('website').value = profile.website || '';
+      document.getElementById('avatar').value = profile.avatar || '';
+      document.getElementById('coverPhoto').value = profile.coverPhoto || '';
+      document.getElementById('interests').value = profile.interests ? profile.interests.join(', ') : '';
+      
+      if (profile.socialMedia) {
+        document.getElementById('facebook').value = profile.socialMedia.facebook || '';
+        document.getElementById('instagram').value = profile.socialMedia.instagram || '';
+        document.getElementById('twitter').value = profile.socialMedia.twitter || '';
+        document.getElementById('linkedin').value = profile.socialMedia.linkedin || '';
+      }
+    }
+
+    function displayProfile(profile) {
+      let html = '';
+
+      if (profile.coverPhoto) {
+        html += `<img src="${profile.coverPhoto}" class="cover-preview" alt="Cover">`;
+      }
+
+      if (profile.avatar) {
+        html += `<img src="${profile.avatar}" class="avatar-preview" alt="Avatar">`;
+      }
+
+      html += `<div class="profile-field"><strong>Email:</strong> ${profile.email}</div>`;
+      html += `<div class="profile-field"><strong>Nombre:</strong> ${profile.name}</div>`;
+      
+      if (profile.bio) {
+        html += `<div class="profile-field"><strong>Bio:</strong> ${profile.bio}</div>`;
+      }
+      
+      if (profile.phone) {
+        html += `<div class="profile-field"><strong>Teléfono:</strong> ${profile.phone}</div>`;
+      }
+      
+      if (profile.dateOfBirth) {
+        html += `<div class="profile-field"><strong>Fecha Nac.:</strong> ${new Date(profile.dateOfBirth).toLocaleDateString()}</div>`;
+      }
+      
+      if (profile.gender) {
+        html += `<div class="profile-field"><strong>Género:</strong> ${profile.gender}</div>`;
+      }
+      
+      if (profile.occupation) {
+        html += `<div class="profile-field"><strong>Ocupación:</strong> ${profile.occupation}</div>`;
+      }
+      
+      if (profile.company) {
+        html += `<div class="profile-field"><strong>Empresa:</strong> ${profile.company}</div>`;
+      }
+      
+      if (profile.website) {
+        html += `<div class="profile-field"><strong>Website:</strong> <a href="${profile.website}" target="_blank">${profile.website}</a></div>`;
+      }
+
+      if (profile.interests && profile.interests.length > 0) {
+        html += `<div class="profile-field"><strong>Intereses:</strong></div>`;
+        html += `<div class="interests-tags">`;
+        profile.interests.forEach(interest => {
+          html += `<span class="interest-tag">${interest}</span>`;
+        });
+        html += `</div>`;
+      }
+
+      if (profile.socialMedia) {
+        html += `<div class="profile-field"><strong>Redes:</strong></div>`;
+        html += `<div class="social-links">`;
+        if (profile.socialMedia.facebook) html += `<a href="${profile.socialMedia.facebook}" target="_blank" class="social-link">Facebook</a>`;
+        if (profile.socialMedia.instagram) html += `<a href="${profile.socialMedia.instagram}" target="_blank" class="social-link">Instagram</a>`;
+        if (profile.socialMedia.twitter) html += `<a href="${profile.socialMedia.twitter}" target="_blank" class="social-link">Twitter</a>`;
+        if (profile.socialMedia.linkedin) html += `<a href="${profile.socialMedia.linkedin}" target="_blank" class="social-link">LinkedIn</a>`;
+        html += `</div>`;
+      }
+
+      document.getElementById('profilePreview').innerHTML = html;
+    }
+
+    function updateStatus(profile) {
+      const statusText = document.getElementById('statusText');
+      const status = profile.profileCompleted ? '✅ Perfil Completo' : '⚠️ Perfil Incompleto';
+      statusText.textContent = status;
+    }
+
+    function showProfileSection() {
+      document.getElementById('authSection').classList.add('hidden');
+      document.getElementById('profileSection').classList.remove('hidden');
+    }
+
+    function showAlert(message, type) {
+      const alertContainer = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertContainer.appendChild(alert);
+
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
